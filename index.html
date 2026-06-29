@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우미 경영지원팀 문의</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --wumi-navy: #1B2B4B;
+    --wumi-blue: #2563B0;
+    --wumi-blue-light: #3B82C4;
+    --wumi-accent: #E8882A;
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --border: #DDE3EC;
+    --text-primary: #1B2B4B;
+    --text-secondary: #5A6B85;
+    --text-placeholder: #A0AEBE;
+    --error: #DC3545;
+    --success: #198754;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(27,43,75,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--wumi-navy);
+    color: #fff;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    margin-top: 1px;
+  }
+  .header-badge {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 300;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, var(--wumi-navy) 0%, var(--wumi-blue) 100%);
+    color: #fff;
+    padding: 52px 32px 48px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--wumi-accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* ── Section card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px 32px;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .card-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--wumi-blue), var(--wumi-blue-light));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--wumi-navy);
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* ── Form fields ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .required {
+    color: var(--wumi-accent);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .label-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: #FAFBFD;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--text-placeholder);
+    font-size: 13px;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--wumi-blue);
+    box-shadow: 0 0 0 3px rgba(37,99,176,0.1);
+    background: #fff;
+  }
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6B85' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 160px;
+    line-height: 1.7;
+  }
+
+  /* 소속 inline group */
+  .affil-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .affil-row input { border-radius: 8px; }
+
+  /* 연락처 type select + input */
+  .contact-row {
+    display: flex;
+    gap: 8px;
+  }
+  .contact-row select { width: 130px; flex-shrink: 0; }
+  .contact-row input { flex: 1; }
+
+  /* 담당자 badge */
+  .assignee-box {
+    background: #F0F4FA;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .assignee-badge {
+    background: var(--wumi-navy);
+    color: #fff;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+
+  /* ── Privacy notice ── */
+  .privacy-box {
+    background: #F8F9FB;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .privacy-box strong { color: var(--text-primary); }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    accent-color: var(--wumi-blue);
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  /* ── Submit button ── */
+  .submit-wrap {
+    margin-top: 8px;
+    text-align: center;
+  }
+  .btn-submit {
+    background: linear-gradient(135deg, var(--wumi-navy), var(--wumi-blue));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 60px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: -0.2px;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 4px 16px rgba(37,99,176,0.3);
+  }
+  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── Validation ── */
+  .field-error {
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 2px;
+    display: none;
+  }
+  .form-group.has-error input,
+  .form-group.has-error select,
+  .form-group.has-error textarea {
+    border-color: var(--error);
+  }
+  .form-group.has-error .field-error { display: block; }
+
+  /* ── Success modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 36px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.25s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .modal-check {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #198754, #28a745);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+    color: #fff;
+  }
+  .modal h2 { font-size: 20px; font-weight: 700; color: var(--wumi-navy); margin-bottom: 10px; }
+  .modal p  { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+  .modal-assignee { margin: 14px 0 0; font-size: 13px; color: var(--text-primary); }
+  .modal-assignee strong { color: var(--wumi-blue); }
+  .btn-close-modal {
+    margin-top: 24px;
+    background: var(--wumi-navy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 36px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    .hero { padding: 36px 20px 32px; }
+    .hero h1 { font-size: 22px; }
+    main { padding: 24px 14px 60px; }
+    .card { padding: 24px 18px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .affil-row { grid-template-columns: 1fr; }
+    .btn-submit { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-brand">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJgAAAA5CAYAAADKguJqAAAACXBIWXMAAAsTAAALEwEAmpwYAAAIc0lEQVR4nO2d23HiSBSGv5lyAMpgmQhWE8HgCMwoAWMoPRtHgB0B+FkFyAkwTASWIxhNBMtmoBD24TSDELp068Zl9VVRLutyum1+dZ8+fbr1iTZwPBuwEkcj1m7YSvkdJ+NT7RYdrw/0gW+AzbGwkmzV5wPYdKK7LuoRmIjqHhhQLKgiIsAH3jqxXT7VBOZ4Q+ARaamaIABeWLtBQ/Y7GqacwKTFmtGcsJIEwANrd9tSeR01YSYwx7OAKTBpoC46vLB2n09UdkcJ9AUmI8EV+q3WFml5/lU/QbrTLfAT8dVs4G/1s6dpNwC+s3Yjzes7ToiewBxvgIjLKrhyC7wio8FtwkYP+KV++3IkEBHwPTDUKCcCbrtBwPlTLDBx5FcFV4VI97XJsbNCxANFXZ2UOSW/VYvoRHb25AusWFwR8MTa9Qvs9IH3xNEvhU674z0j3aqVU34nsjPmc+aZvc+VRYCIxNcoZ5pybFZ4l7Ryt0gLmYYFvKu6dpwh6S3Y3l+yMu6bs3aftErIbwVvtWJcMnqdse9ik4TKVqRVp5oYj1yb/QDlL4oHKhHwW/0MF0svaKhqrTAeuT3y/+bwJuNEnkP/oNlqxcMaWcyAr4V2RDgPOB6ki8xWth606lUS9Q8dAHfIdFgZBjF7IA9HAHwslt6mYt16Ze8vIFosvTDl+JD87/f2WGDi9/QzbtAXlzAh/4+2cbwJa3euZW3t5olsiOO9NRH1H4/cIc3NWNjqMxmP3C3wBswXSy8ytDMk/8uuQoC4KsYc+mDSNT5mXOsbiSvfVpypaun0WLsP7ONqSYpGu0aMR+5gPHL/wSz+V4UeIpJ/xqPrCCgnnfwp6V1jqL5YE2YZtpJYmD953xE/JklPtcCVGY/cGfCD8t1OSPaDUIQFTMcj99d45FolbZwF+y5SWpxhxnVm4pKwxMDgjgmO96o917h2IxzvARFAkkccb17F4R+P3HjMrogQmZkIEMc9s9zxyO0jLeE3xA2xCmzbwPt45N6W6DLPgrgPltWKvJSIMxWHII5ZYdLPr90NjrfhWMiWOuaXqMNOBEONS33gZbH0trq21agxAOaqZZqQH+cD5Z8Bz7rlpLBVnzwsGnADRGDiAw1SzkfA3MiihCXsEnXp43h9Qyf9ifR6TykpMPT8xqfF0puXtA+AapGexyN3gwShrYI6PVco7m2xzHcd1IOVDIZXZueDDUj/A1+Nupp9vKosZk66dKl+ypleheCrVXB+W1VccdTwf1NwmVVXeW2zE9hdxnnf0N6Eav+MMk76W8bxQYV65NFrwPG2a7Z3NuwE1k85d5wRkYcMEuqIwzwahi0C0v2LrIemiFDjmve6RKYGFHbBZWEdZZ2Cm4wVPyAjIxOqdI1xLMyj8huOkyDtkuW/UJwyZCOxqlfAN3H0AZQ4BxRnjMTrdJHckB21D7StmIclihiqsEWoef0HaVm25oMGFksvGo/cW4odbwsRyFRF4ENi84yJa3vs5yttzMT/VGUK6dTckP5PjAzz3+tqvZI2dcMWYcbxXpmCF0svVCLTDbT21GdQprwMIkRcfo02W+czEvRLEmpbSA9LbJBm/RZJ6fmU+pGJ7u/q2iBho68yaYvJfhh6WvenoEZ3X5G6RWXtlMQHvl66uOAw0Bon0rr7MCyxQdYybrRLly4wZDdM38fj7pGue4bjBZqhkoDyGQ6pxGJVc1WvJpfobZERsbFPd85kCey35v0Tdq1VHUvKREg+4MdGpRPKBxnTWmdjlNB8wI856LvFKv2SZkP2ftvmmkQVJ0tgehQtIRPnv0d2VxUC21RnXgT7YBSyaIGY2P6gRGerX3sc/70Re7dje61iSqOawJLsu7g7TBxex4uQLu7nUUrQBSxPU6ILTlyNsyRLYH8bWdl3ZwPKRfItde8Ax5shS98qZUQoPnQvVHNx/YrlNc320hz/LIFZWndLizWh3kxKS9l7VLGwZ837+hXL7dNcRmhdBJSfxD8JN8hT3k8ctwvvFP9qRXN54BaS7XqHpGqHOXWxMs5EdVfqQpmOR+5JHp7PpH8Jlur20pHY1zvNiSuOjSxNG+Zc0884HtZclw5DPpP9JfRTj8oK7Vpz3zWwgFWOyNLDEd22TyfnhrUbqJU6Se5I9veHy/9PwQrHI2XxySDl2tDQdlCiPknuyW/Vq05abyve3zo7J3/D8Zd0mGclrcew4frosMLxosSMwSvH86GBidFYOnNpxiP3GzkCK8oqvUZ2AvvJocA2B19g8TYCbbPC8cI/swdrd47j3XM4OMlKRLxKlHifT1yNI3YJhxv2zn6E5LrHaSJbogoWx4KP1zl9dqCjdURgEtDcqGOHy8ccb8J5BiD7qm6COPSB+u21/ep0pBEPtO4yOf0/RyRUMUNnq6W2kTjcDxzPj0X8X5Bu0j9NpTqS7Fd2i4BuE0LaBefSFrieDgms7jZomfw5Lq3YwyXMX/5fONw6IB43Olwraas5wnMhPoNwf3DGJB+to3GyN6A7nrieFETT20FicYPYkZ525mtH6+QJLG3ZV140vXmyA721JBZ21E9ePlg/4/gKx+u1vl99/ixCr72K5PLEBa/CLoFPfnA6zN4EOH3j3jgb2nCoZST7g+wMj4huI+CzJbuL3I3IshkAvxr1fyTO9YtOXBdLXfvkB9T50qpun/yrQfdNH0P0diwM2b/pIzKqiXSFA2RpWK/g6ohOXBeB6buKTLaUDJGW7Te7NBNJDbLYd3k2++VfNnqEyLuKtprXd5yQMm9bS8ah2qR729qFUeV9kU3m4ycJkFfWhC2V11ETdbzxVncLojIEdG+8vWjqemf3AIn8D2uwFiExNpPtmzrOlHoEFkfE9g39fRsixHH/AIKutbou6hdYGuKzHdOJ6er5Dyr/zqPx0twSAAAAAElFTkSuQmCC" style="height:40px; width:auto;" alt="우미 로고">
+    <div>
+      <div class="header-title">우미 경영지원 문의 페이지</div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>경영지원팀 문의</h1>
+  <p>아래 양식을 작성해 주시면 담당자가<br>확인 후 신속하게 답변 드리겠습니다.</p>
+</div>
+
+<!-- Main form -->
+<main>
+<form id="inquiryForm" novalidate>
+
+  <!-- 1. 기본 정보 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">👤</div>
+      <div>
+        <div class="card-title">기본 정보</div>
+        <div class="card-desc">문의자 정보를 입력해 주세요</div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>성명 <span class="required">*</span></label>
+        <input type="text" id="name" placeholder="홍길동">
+        <span class="field-error">성명을 입력해 주세요.</span>
+      </div>
+
+      <div class="form-group">
+        <label>사번 <span class="required">*</span></label>
+        <input type="text" id="empno" placeholder="">
+        <span class="field-error">사번을 입력해 주세요.</span>
+      </div>
+
+      <div class="form-group full">
+        <label>소속 <span class="required">*</span> <span class="label-hint">현장명 또는 부서명을 입력해 주세요</span></label>
+        <div class="affil-row">
+          <input type="text" id="site" placeholder="현장명 (예: OO현장)">
+          <input type="text" id="dept" placeholder="부서명 (예: 경영지원팀)">
+        </div>
+        <span class="field-error" id="affil-error">현장명 또는 부서명 중 하나를 입력해 주세요.</span>
+      </div>
+
+      <div class="form-group full">
+        <label>회신 연락처 <span class="required">*</span></label>
+        <div class="contact-row">
+          <select id="contactType">
+            <option value="email">이메일</option>
+            <option value="phone">휴대폰 번호</option>
+          </select>
+          <input type="text" id="contactValue" placeholder="이메일 주소를 입력해 주세요">
+        </div>
+        <span class="field-error" id="contact-error">회신 연락처를 올바르게 입력해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 문의 내용 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div>
+        <div class="card-title">문의 내용</div>
+        <div class="card-desc">문의 유형 선택 시 담당자가 자동으로 배정됩니다</div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>문의 유형 <span class="required">*</span></label>
+        <select id="inquiryType">
+          <option value="">— 문의 유형을 선택해 주세요 —</option>
+          <optgroup label="복리후생">
+            <option value="건강검진">건강검진</option>
+            <option value="경조사">경조사</option>
+            <option value="난임시술비">난임시술비</option>
+            <option value="단체상해보험">단체상해보험</option>
+            <option value="동호회">동호회</option>
+            <option value="법인콘도">법인콘도</option>
+            <option value="복지몰/복지포인트">복지몰 / 복지포인트</option>
+            <option value="사내 심리상담">사내 심리상담</option>
+            <option value="신라모노그램">신라모노그램</option>
+            <option value="우미행복지원금">우미행복지원금</option>
+            <option value="자녀학자금">자녀학자금</option>
+            <option value="장기근속 해외여행상품권">장기근속 해외여행상품권</option>
+            <option value="전임여비">전임여비</option>
+            <option value="직원대출">직원대출</option>
+            <option value="초등학교 입학자녀 선물">초등학교 입학자녀 선물</option>
+            <option value="하계휴양소">하계휴양소</option>
+            <option value="현장 근무복">현장 근무복</option>
+            <option value="현장여비">현장여비</option>
+          </optgroup>
+          <optgroup label="총무·시설">
+            <option value="명함 신청">명함 신청</option>
+            <option value="법인차량(업무차량)">법인차량 (업무차량)</option>
+            <option value="법인차량(임원)">법인차량 (임원)</option>
+            <option value="주차지원">주차지원</option>
+            <option value="시설물(보수요청)">시설물 보수 요청</option>
+            <option value="사무집기 요청(데스크, 의자 등)">사무집기 요청 (데스크, 의자 등)</option>
+          </optgroup>
+          <optgroup label="법무·경영">
+            <option value="계열사 관련 (정관, 등기업무)">계열사 관련 (정관, 등기업무)</option>
+          </optgroup>
+          <optgroup label="기타">
+            <option value="기타">기타</option>
+          </optgroup>
+        </select>
+        <span class="field-error">문의 유형을 선택해 주세요.</span>
+      </div>
+
+      <!-- 담당자 자동표시 -->
+      <div class="form-group full" id="assigneeGroup" style="display:none;">
+        <label>배정 담당자</label>
+        <div class="assignee-box" id="assigneeBox">—</div>
+      </div>
+
+      <div class="form-group full">
+        <label>제목 <span class="required">*</span></label>
+        <input type="text" id="subject" placeholder="예시 : 건강검진 문의">
+        <span class="field-error">제목을 입력해 주세요.</span>
+      </div>
+
+      <div class="form-group full">
+        <label>문의 내용 <span class="required">*</span></label>
+        <textarea id="content" placeholder="문의 내용을 상세히 적어주세요"></textarea>
+        <span class="field-error">문의 내용을 입력해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 개인정보 동의 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔒</div>
+      <div>
+        <div class="card-title">개인정보 수집·이용 동의</div>
+      </div>
+    </div>
+    <div class="privacy-box">
+      <strong>수집 항목</strong> : 성명, 사번, 소속, 연락처<br>
+      <strong>수집 목적</strong> : 문의 접수 및 답변 회신<br>
+      <strong>보유 기간</strong> : 문의 처리 완료 후 1년<br><br>
+      위 개인정보는 문의 처리 목적으로만 활용되며, 목적 달성 후 안전하게 파기됩니다.
+    </div>
+    <label class="checkbox-row">
+      <input type="checkbox" id="privacyAgree">
+      <span>개인정보 수집·이용에 동의합니다. <span class="required">*</span></span>
+    </label>
+    <span class="field-error" id="privacy-error" style="margin-top:6px;">개인정보 수집·이용에 동의해 주세요.</span>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-wrap">
+    <button type="submit" class="btn-submit" id="submitBtn">문의 제출하기</button>
+  </div>
+
+</form>
+</main>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-check">✓</div>
+    <h2>문의가 접수되었습니다</h2>
+    <p>담당자가 확인 후 입력하신 연락처로<br>신속히 답변 드리겠습니다.</p>
+    <p class="modal-assignee" id="modalAssigneeText"></p>
+    <button class="btn-close-modal" onclick="closeModal()">확인</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ── 담당자 매핑 ── */
+const ASSIGNEE_MAP = {
+  "건강검진":                     ["김성윤", "편도민"],
+  "경조사":                       ["김성윤", "편도민"],
+  "난임시술비":                    ["김성윤", "편도민"],
+  "단체상해보험":                  ["김성윤", "편도민"],
+  "동호회":                       ["장형규"],
+  "법인콘도":                      ["김성윤", "편도민"],
+  "복지몰/복지포인트":              ["김성윤", "편도민"],
+  "사내 심리상담":                  ["장형규"],
+  "신라모노그램":                   ["김성윤", "편도민"],
+  "우미행복지원금":                 ["편도민"],
+  "자녀학자금":                    ["김성윤", "편도민"],
+  "장기근속 해외여행상품권":         ["김성윤", "편도민"],
+  "전임여비":                      ["김성윤", "편도민"],
+  "직원대출":                      ["김성윤", "편도민"],
+  "초등학교 입학자녀 선물":          ["김성윤", "편도민"],
+  "하계휴양소":                    ["김성윤", "편도민"],
+  "현장 근무복":                   ["편도민"],
+  "현장여비":                      ["김성윤", "편도민"],
+  "명함 신청":                     ["김정우"],
+  "법인차량(업무차량)":             ["윤성훈", "김정우"],
+  "법인차량(임원)":                ["윤성훈", "김정우"],
+  "주차지원":                      ["윤성훈", "김정우"],
+  "시설물(보수요청)":               ["김정우", "장형규"],
+  "사무집기 요청(데스크, 의자 등)":  ["김정우", "장형규"],
+  "계열사 관련 (정관, 등기업무)":    ["윤성훈", "장형규"],
+  "기타":                          ["편도민", "장형규"],
+};
+
+const EMAIL_MAP = {
+  "편도민":  "dmpyun@wm.co.kr",
+  "장형규":  "jhk2397@wm.co.kr",
+  "김성윤":  "ksy0501@wm.co.kr",
+  "김정우":  "kjw0720@wm.co.kr",
+  "윤성훈":  "ysh880104@wm.co.kr",
+};
+
+/* ── 문의 유형 → 담당자 표시 ── */
+document.getElementById('inquiryType').addEventListener('change', function() {
+  const val = this.value;
+  const group = document.getElementById('assigneeGroup');
+  const box = document.getElementById('assigneeBox');
+
+  if (!val) {
+    group.style.display = 'none';
+    return;
+  }
+  const people = ASSIGNEE_MAP[val] || [];
+  if (people.length) {
+    group.style.display = '';
+    box.innerHTML = people.map(p =>
+      `<span class="assignee-badge">${p}</span>`
+    ).join('');
+  } else {
+    group.style.display = 'none';
+  }
+});
+
+/* ── 연락처 placeholder 전환 ── */
+document.getElementById('contactType').addEventListener('change', function() {
+  const input = document.getElementById('contactValue');
+  input.value = '';
+  if (this.value === 'email') {
+    input.placeholder = '이메일 주소를 입력해 주세요';
+    input.type = 'email';
+  } else {
+    input.placeholder = '휴대폰 번호를 입력해 주세요 (예: 010-1234-5678)';
+    input.type = 'tel';
+  }
+});
+
+
+
+/* ── Validation 헬퍼 ── */
+function setError(id, show) {
+  const el = typeof id === 'string' ? document.getElementById(id) : id;
+  if (!el) return;
+  const group = el.closest('.form-group');
+  if (!group) return;
+  group.classList.toggle('has-error', show);
+}
+
+function validateForm() {
+  let ok = true;
+
+  const name = document.getElementById('name');
+  if (!name.value.trim()) { setError(name, true); ok = false; } else { setError(name, false); }
+
+  const empno = document.getElementById('empno');
+  if (!empno.value.trim()) { setError(empno, true); ok = false; } else { setError(empno, false); }
+
+  const site = document.getElementById('site').value.trim();
+  const dept = document.getElementById('dept').value.trim();
+  const affilGroup = document.getElementById('site').closest('.form-group');
+  if (!site && !dept) {
+    affilGroup.classList.add('has-error');
+    document.getElementById('affil-error').style.display = 'block';
+    ok = false;
+  } else {
+    affilGroup.classList.remove('has-error');
+    document.getElementById('affil-error').style.display = 'none';
+  }
+
+  const contactType  = document.getElementById('contactType').value;
+  const contactValue = document.getElementById('contactValue').value.trim();
+  const contactGroup = document.getElementById('contactValue').closest('.form-group');
+  let contactOk = false;
+  if (contactType === 'email') {
+    contactOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactValue);
+  } else {
+    contactOk = /^01[0-9][-\s]?\d{3,4}[-\s]?\d{4}$/.test(contactValue.replace(/\s/g,''));
+  }
+  if (!contactOk) {
+    contactGroup.classList.add('has-error');
+    document.getElementById('contact-error').style.display = 'block';
+    ok = false;
+  } else {
+    contactGroup.classList.remove('has-error');
+    document.getElementById('contact-error').style.display = 'none';
+  }
+
+  const inquiryType = document.getElementById('inquiryType');
+  if (!inquiryType.value) { setError(inquiryType, true); ok = false; } else { setError(inquiryType, false); }
+
+  const subject = document.getElementById('subject');
+  if (!subject.value.trim()) { setError(subject, true); ok = false; } else { setError(subject, false); }
+
+  const content = document.getElementById('content');
+  if (!content.value.trim()) { setError(content, true); ok = false; } else { setError(content, false); }
+
+  const privacyAgree = document.getElementById('privacyAgree');
+  const privacyGroup = privacyAgree.closest('.card');
+  if (!privacyAgree.checked) {
+    document.getElementById('privacy-error').style.display = 'block';
+    ok = false;
+  } else {
+    document.getElementById('privacy-error').style.display = 'none';
+  }
+
+  return ok;
+}
+
+/* ── EmailJS 설정 ── */
+const EMAILJS_SERVICE_ID  = 'service_i9txwgo';
+const EMAILJS_TEMPLATE_ID = 'template_warhonn';
+const EMAILJS_PUBLIC_KEY  = 'UQ1rrirSzXw64MTBT';
+
+/* ── Form submit ── */
+document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!validateForm()) {
+    const firstErr = document.querySelector('.has-error');
+    if (firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '전송 중…';
+
+  const typeVal   = document.getElementById('inquiryType').value;
+  const assignees = ASSIGNEE_MAP[typeVal] || [];
+  const emails    = assignees.map(p => EMAIL_MAP[p]).filter(Boolean);
+
+  const site = document.getElementById('site').value.trim();
+  const dept = document.getElementById('dept').value.trim();
+  const affiliation = [site, dept].filter(Boolean).join(' / ');
+
+  const contactType  = document.getElementById('contactType').value;
+  const contactValue = document.getElementById('contactValue').value.trim();
+  const contact = (contactType === 'email' ? '이메일' : '휴대폰') + ' : ' + contactValue;
+
+  // 담당자별로 각각 메일 발송
+  try {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    const sendPromises = emails.map(toEmail =>
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:     toEmail,
+        name:         document.getElementById('name').value.trim(),
+        employee_id:  document.getElementById('empno').value.trim(),
+        department:   affiliation,
+        reply_email:  contact,
+        inquiry_type: typeVal,
+        subject:      document.getElementById('subject').value.trim(),
+        message:      document.getElementById('content').value.trim(),
+      })
+    );
+
+    await Promise.all(sendPromises);
+
+    // 성공 모달
+    const names = assignees.join(', ');
+    document.getElementById('modalAssigneeText').innerHTML =
+      names ? `배정 담당자 : <strong>${names}</strong>` : '';
+    document.getElementById('successModal').classList.add('show');
+
+  } catch (err) {
+    console.error('EmailJS 오류:', err);
+    alert('메일 전송 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '문의 제출하기';
+});
+
+function closeModal() {
+  document.getElementById('successModal').classList.remove('show');
+  // 폼 초기화
+  document.getElementById('inquiryForm').reset();
+  document.getElementById('assigneeGroup').style.display = 'none';
+  document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
