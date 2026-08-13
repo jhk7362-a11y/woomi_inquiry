@@ -576,7 +576,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+/* ── Supabase 설정 ── */
+const SUPABASE_URL = 'https://dmyctkxfwzwgyroxkogb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_gFDitSvVT1fbhRVK1DEsxw_fCZJF9SS';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 /* ── 담당자 매핑 ── */
 const ASSIGNEE_MAP = {
   "건강검진":                     ["김성윤", "편도민"],
@@ -750,9 +756,22 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
   const contactValue = document.getElementById('contactValue').value.trim();
   const contact = (contactType === 'email' ? '이메일' : '휴대폰') + ' : ' + contactValue;
 
-  // 담당자별로 각각 메일 발송
+  // Supabase 저장 + 담당자별 메일 발송
   try {
     emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    const insertPromise = supabaseClient.from('inquiries').insert({
+      name:         document.getElementById('name').value.trim(),
+      empno:        document.getElementById('empno').value.trim(),
+      site:         site || null,
+      dept:         dept || null,
+      contact_type: contactType,
+      contact_value: contactValue,
+      inquiry_type: typeVal,
+      assignees:    assignees,
+      subject:      document.getElementById('subject').value.trim(),
+      content:      document.getElementById('content').value.trim(),
+    }).then(({ error }) => { if (error) throw error; });
 
     const sendPromises = emails.map(toEmail =>
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -767,7 +786,7 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
       })
     );
 
-    await Promise.all(sendPromises);
+    await Promise.all([insertPromise, ...sendPromises]);
 
     // 성공 모달
     const names = assignees.join(', ');
@@ -776,8 +795,8 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
     document.getElementById('successModal').classList.add('show');
 
   } catch (err) {
-    console.error('EmailJS 오류:', err);
-    alert('메일 전송 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.');
+    console.error('제출 오류:', err);
+    alert('문의 제출 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.');
   }
 
   btn.disabled = false;
