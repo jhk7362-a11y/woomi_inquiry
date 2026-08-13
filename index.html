@@ -798,7 +798,7 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
           reply_email:  contact,
           inquiry_type: typeVal,
           subject:      document.getElementById('subject').value.trim(),
-          message:      `문의가 담당자인 ${assigneeNames}에게 전달이 완료되었습니다.\n\n[문의 내용]\n${document.getElementById('content').value.trim()}`,
+          message:      `문의 접수가 완료되었습니다.\n\n문의가 담당자인 ${assigneeNames}에게 전달되었습니다.`,
         })
       );
     }
