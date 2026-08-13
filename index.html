@@ -747,6 +747,7 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
   const typeVal   = document.getElementById('inquiryType').value;
   const assignees = ASSIGNEE_MAP[typeVal] || [];
   const emails    = assignees.map(p => EMAIL_MAP[p]).filter(Boolean);
+  const assigneeNames = assignees.join(', ');
 
   const site = document.getElementById('site').value.trim();
   const dept = document.getElementById('dept').value.trim();
@@ -786,12 +787,27 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
       })
     );
 
+    // 문의자가 이메일을 남긴 경우, 접수 확인 메일 발송
+    if (contactType === 'email' && contactValue) {
+      sendPromises.push(
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email:     contactValue,
+          name:         document.getElementById('name').value.trim(),
+          employee_id:  document.getElementById('empno').value.trim(),
+          department:   affiliation,
+          reply_email:  contact,
+          inquiry_type: typeVal,
+          subject:      document.getElementById('subject').value.trim(),
+          message:      `문의가 담당자인 ${assigneeNames}에게 전달이 완료되었습니다.\n\n[문의 내용]\n${document.getElementById('content').value.trim()}`,
+        })
+      );
+    }
+
     await Promise.all([insertPromise, ...sendPromises]);
 
     // 성공 모달
-    const names = assignees.join(', ');
     document.getElementById('modalAssigneeText').innerHTML =
-      names ? `배정 담당자 : <strong>${names}</strong>` : '';
+      assigneeNames ? `배정 담당자 : <strong>${assigneeNames}</strong>` : '';
     document.getElementById('successModal').classList.add('show');
 
   } catch (err) {
