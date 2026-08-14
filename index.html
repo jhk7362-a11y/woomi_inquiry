@@ -776,14 +776,16 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
 
     const sendPromises = emails.map(toEmail =>
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        to_email:     toEmail,
-        name:         document.getElementById('name').value.trim(),
-        employee_id:  document.getElementById('empno').value.trim(),
-        department:   affiliation,
-        reply_email:  contact,
-        inquiry_type: typeVal,
-        subject:      document.getElementById('subject').value.trim(),
-        message:      document.getElementById('content').value.trim(),
+        to_email:      toEmail,
+        name:          document.getElementById('name').value.trim(),
+        employee_id:   document.getElementById('empno').value.trim(),
+        department:    affiliation,
+        reply_email:   contact,
+        inquiry_type:  typeVal,
+        subject:       document.getElementById('subject').value.trim(),
+        message:       document.getElementById('content').value.trim(),
+        header_message: '새로운 문의가 접수되었습니다',
+        badge_html:    `<span class="badge">${typeVal}</span>`,
       })
     );
 
@@ -791,14 +793,16 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
     if (contactType === 'email' && contactValue) {
       sendPromises.push(
         emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          to_email:     contactValue,
-          name:         document.getElementById('name').value.trim(),
-          employee_id:  document.getElementById('empno').value.trim(),
-          department:   affiliation,
-          reply_email:  contact,
-          inquiry_type: typeVal,
-          subject:      document.getElementById('subject').value.trim(),
-          message:      `문의 접수가 완료되었습니다.\n\n문의가 담당자인 ${assigneeNames}에게 전달되었습니다.`,
+          to_email:      contactValue,
+          name:          document.getElementById('name').value.trim(),
+          employee_id:   document.getElementById('empno').value.trim(),
+          department:    affiliation,
+          reply_email:   contact,
+          inquiry_type:  typeVal,
+          subject:       document.getElementById('subject').value.trim(),
+          message:       '문의 접수가 완료되었습니다.',
+          header_message: `문의가 담당자인 ${assigneeNames}에게 전달이 완료되었습니다.`,
+          badge_html:    '',
         })
       );
     }
