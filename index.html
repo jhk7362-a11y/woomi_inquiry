@@ -785,7 +785,7 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
         subject:       document.getElementById('subject').value.trim(),
         message:       document.getElementById('content').value.trim(),
         header_message: '새로운 문의가 접수되었습니다',
-        badge_html:    `<span class="badge">${typeVal}</span>`,
+        content_title: '문의 내용',
       })
     );
 
@@ -798,11 +798,11 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
           employee_id:   document.getElementById('empno').value.trim(),
           department:    affiliation,
           reply_email:   contact,
-          inquiry_type:  typeVal,
+          inquiry_type:  '',
           subject:       document.getElementById('subject').value.trim(),
           message:       '문의 접수가 완료되었습니다.',
           header_message: `문의가 담당자인 ${assigneeNames}에게 전달이 완료되었습니다.`,
-          badge_html:    '',
+          content_title: '접수 현황',
         })
       );
     }
