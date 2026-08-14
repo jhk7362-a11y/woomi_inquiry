@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우미 경영지원팀 문의 관리자</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --wumi-navy: #1B2B4B;
+    --wumi-blue: #2563B0;
+    --wumi-blue-light: #3B82C4;
+    --wumi-accent: #E8882A;
+    --bg: #F5F7FA;
+    --surface: #FFFFFF;
+    --border: #DDE3EC;
+    --text-primary: #1B2B4B;
+    --text-secondary: #5A6B85;
+    --text-placeholder: #A0AEBE;
+    --error: #DC3545;
+    --success: #198754;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(27,43,75,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--wumi-navy);
+    color: #fff;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .header-right { display: flex; align-items: center; gap: 16px; font-size: 13px; color: rgba(255,255,255,0.75); }
+  .btn-logout {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.22); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ── Auth 화면 공통 ── */
+  .auth-box {
+    max-width: 360px;
+    margin: 90px auto;
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+  }
+  .auth-box h1 { font-size: 18px; margin-bottom: 6px; }
+  .auth-box p { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .form-group input:focus { outline: none; border-color: var(--wumi-blue); }
+  .btn-primary {
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    background: var(--wumi-blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .form-error { color: var(--error); font-size: 13px; margin-top: 12px; display: none; }
+  .form-success { color: var(--success); font-size: 13px; margin-top: 12px; display: none; }
+  .link-btn {
+    display: inline-block;
+    margin-top: 16px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    color: var(--wumi-blue);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ── List ── */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .toolbar h2 { font-size: 18px; }
+  .toolbar .count { font-size: 13px; color: var(--text-secondary); }
+
+  .card-list { display: flex; flex-direction: column; gap: 14px; }
+  .inquiry-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+  }
+  .inquiry-card.completed { opacity: 0.6; }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .card-title { font-size: 15px; font-weight: 600; }
+  .card-date { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .status-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .status-badge.pending { background: rgba(232,136,42,0.15); color: var(--wumi-accent); }
+  .status-badge.completed { background: rgba(25,135,84,0.15); color: var(--success); }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px 20px;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .info-grid .label { color: var(--text-secondary); margin-right: 4px; }
+
+  .content-box {
+    background: #f8f9fc;
+    border-left: 4px solid var(--wumi-blue-light);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 14px;
+  }
+
+  .card-bottom { display: flex; justify-content: flex-end; }
+  .btn-complete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--wumi-navy);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-complete:hover { opacity: 0.9; }
+  .btn-complete:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .empty-state { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 60px 0; }
+
+  /* ── 관리자 계정 관리 ── */
+  .admin-manage-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .admin-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .admin-row:last-child { border-bottom: none; }
+  .admin-row .role-tag {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+  }
+  .add-admin-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .add-admin-form input {
+    flex: 1;
+    min-width: 160px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .add-admin-form button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--wumi-navy);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .add-admin-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">우미 경영지원팀 문의 관리자</div>
+  <div class="header-right" id="headerRight" style="display:none;">
+    <span id="adminEmailLabel"></span>
+    <button class="btn-logout" id="logoutBtn">로그아웃</button>
+  </div>
+</header>
+
+<!-- 로그인 -->
+<div class="auth-box" id="loginScreen">
+  <h1>관리자 로그인</h1>
+  <p>담당자 계정으로 로그인해 주세요.</p>
+  <div class="form-group">
+    <label>이메일</label>
+    <input type="email" id="loginEmail" placeholder="you@wm.co.kr">
+  </div>
+  <div class="form-group">
+    <label>비밀번호</label>
+    <input type="password" id="loginPassword">
+  </div>
+  <button class="btn-primary" id="loginBtn">로그인</button>
+  <div class="form-error" id="loginError">이메일 또는 비밀번호가 올바르지 않습니다.</div>
+  <button class="link-btn" id="showForgotBtn">비밀번호를 잊으셨나요?</button>
+</div>
+
+<!-- 비밀번호 재설정 요청 -->
+<div class="auth-box" id="forgotScreen" style="display:none;">
+  <h1>비밀번호 재설정</h1>
+  <p>가입된 이메일로 재설정 링크를 보내드립니다.</p>
+  <div class="form-group">
+    <label>이메일</label>
+    <input type="email" id="forgotEmail" placeholder="you@wm.co.kr">
+  </div>
+  <button class="btn-primary" id="sendResetBtn">재설정 링크 보내기</button>
+  <div class="form-error" id="forgotError"></div>
+  <div class="form-success" id="forgotSuccess">메일함을 확인해 주세요. 재설정 링크를 보내드렸습니다.</div>
+  <button class="link-btn" id="backToLoginBtn">로그인으로 돌아가기</button>
+</div>
+
+<!-- 새 비밀번호 설정 (최초 로그인 강제 변경 / 재설정 링크 클릭 후 공용) -->
+<div class="auth-box" id="changePasswordScreen" style="display:none;">
+  <h1 id="changePwTitle">비밀번호 변경</h1>
+  <p id="changePwDesc">계정 보호를 위해 새 비밀번호를 설정해 주세요.</p>
+  <div class="form-group">
+    <label>새 비밀번호</label>
+    <input type="password" id="newPassword">
+  </div>
+  <div class="form-group">
+    <label>새 비밀번호 확인</label>
+    <input type="password" id="newPasswordConfirm">
+  </div>
+  <button class="btn-primary" id="changePwBtn">비밀번호 변경</button>
+  <div class="form-error" id="changePwError"></div>
+</div>
+
+<main id="mainScreen" style="display:none;">
+  <div id="adminPanel" style="display:none;">
+    <div class="toolbar"><h2>관리자 계정 관리</h2></div>
+    <div class="admin-manage-card">
+      <div id="adminListEl"></div>
+      <div class="add-admin-form">
+        <input type="email" id="newAdminEmail" placeholder="새 관리자 이메일">
+        <input type="password" id="newAdminPassword" placeholder="초기 비밀번호 (6자 이상)">
+        <button id="addAdminBtn">계정 추가</button>
+      </div>
+      <div class="form-error" id="addAdminError"></div>
+      <div class="form-success" id="addAdminSuccess">관리자 계정이 추가되었습니다.</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <h2>접수된 문의</h2>
+    <span class="count" id="countLabel"></span>
+  </div>
+  <div class="card-list" id="cardList"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://dmyctkxfwzwgyroxkogb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_gFDitSvVT1fbhRVK1DEsxw_fCZJF9SS';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const EMAILJS_SERVICE_ID  = 'service_i9txwgo';
+const EMAILJS_TEMPLATE_ID = 'template_warhonn';
+const EMAILJS_PUBLIC_KEY  = 'UQ1rrirSzXw64MTBT';
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+const screens = {
+  login:          document.getElementById('loginScreen'),
+  forgot:         document.getElementById('forgotScreen'),
+  changePassword: document.getElementById('changePasswordScreen'),
+  main:           document.getElementById('mainScreen'),
+};
+const headerRight     = document.getElementById('headerRight');
+const adminEmailLabel = document.getElementById('adminEmailLabel');
+const cardList        = document.getElementById('cardList');
+const countLabel      = document.getElementById('countLabel');
+
+let currentUser = null; // { id, email, role }
+
+function showScreen(name) {
+  Object.entries(screens).forEach(([key, el]) => {
+    el.style.display = key === name ? 'block' : 'none';
+  });
+  headerRight.style.display = (name === 'main' || name === 'changePassword') ? 'flex' : 'none';
+}
+
+/* ── 로그인 ── */
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn      = document.getElementById('loginBtn');
+  const errorEl  = document.getElementById('loginError');
+
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = '로그인 중…';
+
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  btn.disabled = false;
+  btn.textContent = '로그인';
+
+  if (error) {
+    errorEl.style.display = 'block';
+    return;
+  }
+  await afterAuth();
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  location.reload();
+});
+
+/* ── 비밀번호 찾기 ── */
+document.getElementById('showForgotBtn').addEventListener('click', () => showScreen('forgot'));
+document.getElementById('backToLoginBtn').addEventListener('click', () => showScreen('login'));
+
+document.getElementById('sendResetBtn').addEventListener('click', async () => {
+  const email   = document.getElementById('forgotEmail').value.trim();
+  const btn     = document.getElementById('sendResetBtn');
+  const errorEl = document.getElementById('forgotError');
+  const okEl    = document.getElementById('forgotSuccess');
+
+  errorEl.style.display = 'none';
+  okEl.style.display = 'none';
+  if (!email) return;
+
+  btn.disabled = true;
+  btn.textContent = '전송 중…';
+
+  await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/admin.html',
+  });
+
+  btn.disabled = false;
+  btn.textContent = '재설정 링크 보내기';
+  okEl.style.display = 'block';
+});
+
+/* ── 비밀번호 변경 (최초 로그인 강제 변경 / 재설정 공용) ── */
+document.getElementById('changePwBtn').addEventListener('click', async () => {
+  const pw1 = document.getElementById('newPassword').value;
+  const pw2 = document.getElementById('newPasswordConfirm').value;
+  const btn = document.getElementById('changePwBtn');
+  const errorEl = document.getElementById('changePwError');
+
+  errorEl.style.display = 'none';
+
+  if (pw1.length < 6) {
+    errorEl.textContent = '비밀번호는 6자 이상이어야 합니다.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (pw1 !== pw2) {
+    errorEl.textContent = '비밀번호가 일치하지 않습니다.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '변경 중…';
+
+  const { error } = await supabaseClient.auth.updateUser({ password: pw1 });
+
+  btn.disabled = false;
+  btn.textContent = '비밀번호 변경';
+
+  if (error) {
+    errorEl.textContent = '비밀번호 변경에 실패했습니다.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    await supabaseClient.from('admins').update({ must_change_password: false }).eq('user_id', session.user.id);
+  }
+
+  await afterAuth();
+});
+
+/* ── 인증 상태 이벤트 (비밀번호 재설정 링크 클릭 시) ── */
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    document.getElementById('changePwTitle').textContent = '새 비밀번호 설정';
+    document.getElementById('changePwDesc').textContent = '새로 사용할 비밀번호를 입력해 주세요.';
+    showScreen('changePassword');
+  }
+});
+
+/* ── 로그인/비밀번호 변경 이후 진입 라우팅 ── */
+async function afterAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { showScreen('login'); return; }
+
+  const { data: row } = await supabaseClient
+    .from('admins')
+    .select('email, role, must_change_password')
+    .eq('user_id', session.user.id)
+    .maybeSingle();
+
+  if (!row) {
+    showScreen('login');
+    document.getElementById('loginError').textContent = '관리자 권한이 없는 계정입니다.';
+    document.getElementById('loginError').style.display = 'block';
+    await supabaseClient.auth.signOut();
+    return;
+  }
+
+  currentUser = { id: session.user.id, email: row.email, role: row.role };
+
+  if (row.must_change_password) {
+    document.getElementById('changePwTitle').textContent = '비밀번호 변경 필요';
+    document.getElementById('changePwDesc').textContent = '최초 로그인입니다. 새 비밀번호를 설정해 주세요.';
+    showScreen('changePassword');
+    return;
+  }
+
+  showMain();
+}
+
+async function showMain() {
+  showScreen('main');
+  adminEmailLabel.textContent = currentUser.email;
+
+  const adminPanel = document.getElementById('adminPanel');
+  if (currentUser.role === 'super_admin') {
+    adminPanel.style.display = 'block';
+    await loadAdminList();
+  } else {
+    adminPanel.style.display = 'none';
+  }
+
+  await loadInquiries();
+}
+
+/* ── 관리자 계정 관리 (super_admin 전용) ── */
+async function loadAdminList() {
+  const listEl = document.getElementById('adminListEl');
+  const { data, error } = await supabaseClient
+    .from('admins')
+    .select('email, role, must_change_password')
+    .order('created_at', { ascending: true });
+
+  if (error || !data) {
+    listEl.innerHTML = `<div class="empty-state">목록을 불러오지 못했습니다.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = data.map(a => `
+    <div class="admin-row">
+      <span>${escapeHtml(a.email)}${a.role === 'super_admin' ? '<span class="role-tag">최고관리자</span>' : ''}${a.must_change_password ? '<span class="role-tag">비밀번호 미변경</span>' : ''}</span>
+    </div>
+  `).join('');
+}
+
+document.getElementById('addAdminBtn').addEventListener('click', async () => {
+  const email    = document.getElementById('newAdminEmail').value.trim();
+  const password = document.getElementById('newAdminPassword').value;
+  const btn      = document.getElementById('addAdminBtn');
+  const errorEl  = document.getElementById('addAdminError');
+  const okEl     = document.getElementById('addAdminSuccess');
+
+  errorEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  if (!email || password.length < 6) {
+    errorEl.textContent = '이메일과 6자 이상의 비밀번호를 입력해 주세요.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '추가 중…';
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  let result;
+  try {
+    const res = await fetch('/api/admin-create-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    result = await res.json();
+    if (!res.ok) throw new Error(result.error || '계정 추가에 실패했습니다.');
+
+    okEl.style.display = 'block';
+    document.getElementById('newAdminEmail').value = '';
+    document.getElementById('newAdminPassword').value = '';
+    await loadAdminList();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '계정 추가';
+});
+
+/* ── 문의 목록 로드 ── */
+async function loadInquiries() {
+  cardList.innerHTML = '';
+  countLabel.textContent = '불러오는 중…';
+
+  const { data, error } = await supabaseClient
+    .from('inquiries')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    countLabel.textContent = '';
+    cardList.innerHTML = `<div class="empty-state">목록을 불러오지 못했습니다.</div>`;
+    return;
+  }
+
+  countLabel.textContent = `총 ${data.length}건`;
+
+  if (!data.length) {
+    cardList.innerHTML = `<div class="empty-state">접수된 문의가 없습니다.</div>`;
+    return;
+  }
+
+  data.forEach(row => cardList.appendChild(renderCard(row)));
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('ko-KR', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function renderCard(row) {
+  const el = document.createElement('div');
+  el.className = 'inquiry-card' + (row.status === 'completed' ? ' completed' : '');
+
+  const affiliation = [row.site, row.dept].filter(Boolean).join(' / ') || '-';
+  const contactLabel = row.contact_type === 'email' ? '이메일' : '휴대폰';
+  const assignees = (row.assignees || []).join(', ') || '-';
+
+  el.innerHTML = `
+    <div class="card-top">
+      <div>
+        <div class="card-title">${escapeHtml(row.subject)}</div>
+        <div class="card-date">${formatDate(row.created_at)}</div>
+      </div>
+      <span class="status-badge ${row.status === 'completed' ? 'completed' : 'pending'}">
+        ${row.status === 'completed' ? '처리 완료' : '처리 대기'}
+      </span>
+    </div>
+    <div class="info-grid">
+      <div><span class="label">성명</span>${escapeHtml(row.name)}</div>
+      <div><span class="label">사번</span>${escapeHtml(row.empno)}</div>
+      <div><span class="label">소속</span>${escapeHtml(affiliation)}</div>
+      <div><span class="label">연락처</span>${contactLabel} : ${escapeHtml(row.contact_value)}</div>
+      <div><span class="label">문의유형</span>${escapeHtml(row.inquiry_type)}</div>
+      <div><span class="label">배정담당자</span>${escapeHtml(assignees)}</div>
+    </div>
+    <div class="content-box">${escapeHtml(row.content)}</div>
+    <div class="card-bottom"></div>
+  `;
+
+  const bottom = el.querySelector('.card-bottom');
+  if (row.status === 'completed') {
+    const doneLabel = document.createElement('span');
+    doneLabel.style.fontSize = '12px';
+    doneLabel.style.color = 'var(--text-secondary)';
+    doneLabel.textContent = row.completed_at ? `${formatDate(row.completed_at)} 처리 완료` : '처리 완료';
+    bottom.appendChild(doneLabel);
+  } else {
+    const btn = document.createElement('button');
+    btn.className = 'btn-complete';
+    btn.textContent = '문의 처리 완료';
+    btn.addEventListener('click', () => completeInquiry(row, el, btn));
+    bottom.appendChild(btn);
+  }
+
+  return el;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+
+/* ── 완료 처리 ── */
+async function completeInquiry(row, cardEl, btn) {
+  btn.disabled = true;
+  btn.textContent = '처리 중…';
+
+  const completedAt = new Date().toISOString();
+
+  const { error } = await supabaseClient
+    .from('inquiries')
+    .update({ status: 'completed', completed_at: completedAt })
+    .eq('id', row.id);
+
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = '문의 처리 완료';
+    alert('처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    return;
+  }
+
+  if (row.contact_type === 'email' && row.contact_value) {
+    const affiliation = [row.site, row.dept].filter(Boolean).join(' / ');
+    const contact = '이메일 : ' + row.contact_value;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:       row.contact_value,
+        name:           row.name,
+        employee_id:    row.empno,
+        department:     affiliation,
+        reply_email:    contact,
+        inquiry_type:   '',
+        subject:        row.subject,
+        message:        '문의하신 내용의 처리가 완료되었습니다.\n추가 문의사항이 있으시면 다시 남겨주세요.',
+        header_message: '문의하신 내용의 처리가 완료되었습니다.',
+        content_title:  '처리 결과',
+      });
+    } catch (err) {
+      console.error('완료 메일 발송 오류:', err);
+    }
+  }
+
+  row.status = 'completed';
+  row.completed_at = completedAt;
+  cardEl.replaceWith(renderCard(row));
+}
+
+/* ── 최초 진입 ── */
+(async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) await afterAuth();
+})();
+</script>
+</body>
+</html>
