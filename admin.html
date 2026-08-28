@@ -407,12 +407,19 @@ document.getElementById('sendResetBtn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = '전송 중…';
 
-  await supabaseClient.auth.resetPasswordForEmail(email, {
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/admin.html',
   });
 
   btn.disabled = false;
   btn.textContent = '재설정 링크 보내기';
+
+  if (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+    return;
+  }
+
   okEl.style.display = 'block';
 });
 
