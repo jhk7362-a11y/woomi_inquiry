@@ -316,7 +316,9 @@
 <script>
 const SUPABASE_URL = 'https://dmyctkxfwzwgyroxkogb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_gFDitSvVT1fbhRVK1DEsxw_fCZJF9SS';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false },
+});
 
 const EMAILJS_SERVICE_ID  = 'service_i9txwgo';
 const EMAILJS_TEMPLATE_ID = 'template_warhonn';
@@ -695,6 +697,11 @@ async function completeInquiry(row, cardEl, btn) {
 
 /* ── 최초 진입 ── */
 (async () => {
+  // 비밀번호 재설정 링크로 진입한 경우, PASSWORD_RECOVERY 이벤트가 화면 전환을
+  // 전담해야 한다. 여기서 getSession()으로 먼저 afterAuth()를 호출하면 이미
+  // 유효한 복구 세션 때문에 비밀번호 변경 없이 바로 메인 화면으로 넘어가버린다.
+  if (window.location.hash.includes('type=recovery')) return;
+
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) await afterAuth();
 })();
