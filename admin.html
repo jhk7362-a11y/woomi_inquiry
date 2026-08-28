@@ -368,6 +368,10 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   await afterAuth();
 });
 
+document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
   location.reload();
