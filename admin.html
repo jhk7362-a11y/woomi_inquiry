@@ -139,10 +139,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 12px;
+    cursor: pointer;
   }
   .card-title { font-size: 15px; font-weight: 600; }
   .card-date { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .card-top-right { display: flex; align-items: center; gap: 8px; }
   .status-badge {
     font-size: 12px;
     font-weight: 600;
@@ -152,6 +153,18 @@
   }
   .status-badge.pending { background: rgba(232,136,42,0.15); color: var(--wumi-accent); }
   .status-badge.completed { background: rgba(25,135,84,0.15); color: var(--success); }
+  .btn-delete {
+    font-size: 12px;
+    color: var(--error);
+    background: none;
+    border: 1px solid var(--error);
+    border-radius: 14px;
+    padding: 4px 10px;
+    cursor: pointer;
+  }
+  .btn-delete:hover { background: rgba(220,53,69,0.08); }
+  .expand-arrow { color: var(--text-secondary); font-size: 12px; }
+  .card-details { margin-top: 12px; }
 
   .info-grid {
     display: grid;
@@ -634,21 +647,42 @@ function renderCard(row) {
         <div class="card-title">${escapeHtml(row.subject)}</div>
         <div class="card-date">${formatDate(row.created_at)}</div>
       </div>
-      <span class="status-badge ${row.status === 'completed' ? 'completed' : 'pending'}">
-        ${row.status === 'completed' ? '처리 완료' : '처리 대기'}
-      </span>
+      <div class="card-top-right">
+        <span class="status-badge ${row.status === 'completed' ? 'completed' : 'pending'}">
+          ${row.status === 'completed' ? '처리 완료' : '처리 대기'}
+        </span>
+        <button class="btn-delete">삭제</button>
+        <span class="expand-arrow">▾</span>
+      </div>
     </div>
-    <div class="info-grid">
-      <div><span class="label">성명</span>${escapeHtml(row.name)}</div>
-      <div><span class="label">사번</span>${escapeHtml(row.empno)}</div>
-      <div><span class="label">소속</span>${escapeHtml(affiliation)}</div>
-      <div><span class="label">연락처</span>${contactLabel} : ${escapeHtml(row.contact_value)}</div>
-      <div><span class="label">문의유형</span>${escapeHtml(row.inquiry_type)}</div>
-      <div><span class="label">배정담당자</span>${escapeHtml(assignees)}</div>
+    <div class="card-details" style="display:none;">
+      <div class="info-grid">
+        <div><span class="label">성명</span>${escapeHtml(row.name)}</div>
+        <div><span class="label">사번</span>${escapeHtml(row.empno)}</div>
+        <div><span class="label">소속</span>${escapeHtml(affiliation)}</div>
+        <div><span class="label">연락처</span>${contactLabel} : ${escapeHtml(row.contact_value)}</div>
+        <div><span class="label">문의유형</span>${escapeHtml(row.inquiry_type)}</div>
+        <div><span class="label">배정담당자</span>${escapeHtml(assignees)}</div>
+      </div>
+      <div class="content-box">${escapeHtml(row.content)}</div>
+      <div class="card-bottom"></div>
     </div>
-    <div class="content-box">${escapeHtml(row.content)}</div>
-    <div class="card-bottom"></div>
   `;
+
+  const cardTop = el.querySelector('.card-top');
+  const details = el.querySelector('.card-details');
+  const arrow = el.querySelector('.expand-arrow');
+  cardTop.addEventListener('click', () => {
+    const isOpen = details.style.display !== 'none';
+    details.style.display = isOpen ? 'none' : 'block';
+    arrow.textContent = isOpen ? '▾' : '▴';
+  });
+
+  const deleteBtn = el.querySelector('.btn-delete');
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    deleteInquiry(row, el);
+  });
 
   const bottom = el.querySelector('.card-bottom');
   if (row.status === 'completed') {
@@ -661,11 +695,28 @@ function renderCard(row) {
     const btn = document.createElement('button');
     btn.className = 'btn-complete';
     btn.textContent = '문의 처리 완료';
-    btn.addEventListener('click', () => completeInquiry(row, el, btn));
+    btn.addEventListener('click', (e) => { e.stopPropagation(); completeInquiry(row, el, btn); });
     bottom.appendChild(btn);
   }
 
   return el;
+}
+
+/* ── 삭제 처리 ── */
+async function deleteInquiry(row, cardEl) {
+  if (!confirm('이 문의를 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.')) return;
+
+  const { error } = await supabaseClient.from('inquiries').delete().eq('id', row.id);
+  if (error) {
+    alert('삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    return;
+  }
+
+  cardEl.remove();
+  countLabel.textContent = `총 ${cardList.children.length}건`;
+  if (!cardList.children.length) {
+    cardList.innerHTML = `<div class="empty-state">접수된 문의가 없습니다.</div>`;
+  }
 }
 
 function escapeHtml(str) {
